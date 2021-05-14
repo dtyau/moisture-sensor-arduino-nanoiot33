@@ -252,7 +252,7 @@ void sendData() {
     WriteBufferingStream bufferedWifiClient{wifiClient, 64};
 
     SERIALPRINTLN("Connected.");
-    SERIALPRINTLN("POST /app/api/measurements?key=AIzaSyAXpia7qasg_oKSKi7kyWC7-hr7nhg2_z8 HTTP/1.1");
+    SERIALPRINT("POST /app/api/measurements?key="); SERIALPRINT(API_KEY); SERIALPRINTLN(" HTTP/1.1");
     SERIALPRINTLN("Content-Type: application/json");
     SERIALPRINTLN("User-Agent: ArduinoWiFi/1.1");
     SERIALPRINT("Host: "); SERIALPRINTLN(SERVER_NAME);
