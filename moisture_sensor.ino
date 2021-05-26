@@ -22,8 +22,8 @@ const char SENSOR_ID[] = "dau-nanoiot33-1";
 const char SERVER_NAME[] = "us-central1-moisture-sensor-b5192.cloudfunctions.net";
 const char SSID[] = SECRET_SSID;
 const char PASS[] = SECRET_PASS;
-const int DESIRED_SLEEP_DURATION = 3600000; // one hour in ms
-const int DOC_CAPACITY = 384; // https://arduinojson.org/v6/assistant/
+const int DESIRED_SLEEP_DURATION = 1800e3; // half an hour in ms
+const int DOC_CAPACITY = 768; // https://arduinojson.org/v6/assistant/
 const int RESPONSE_TIMEOUT = 5000; // 5 seconds.
 
 Adafruit_seesaw ss;
@@ -224,23 +224,32 @@ void sendData() {
   doc["sensorId"] = SENSOR_ID;
   doc["location"] = LOCATION;
   doc["owner"] = OWNER;
+  doc["soilMoisture"]["value"] = moisture;
+  doc["soilTemperature"]["value"] = temperature;
+  doc["sleepDuration"]["value"] = currentSleepDuration;
+  doc["activeTime"]["value"] = millis();
 
-  JsonArray measurements = doc.createNestedArray("measurements");
+  JsonArray measurementTypes = doc.createNestedArray("measurementTypes");
 
-  JsonObject measurements_0 = measurements.createNestedObject();
-  measurements_0["type"] = "Soil Moisture";
-  measurements_0["unit"] = "capacitance";
-  measurements_0["value"] = moisture;
+  JsonObject measurementTypes_0 = measurementTypes.createNestedObject();
+  measurementTypes_0["type"] = "soilMoisture";
+  measurementTypes_0["name"] = "Soil Moisture";
+  measurementTypes_0["unit"] = "capacitance";
 
-  JsonObject measurements_1 = measurements.createNestedObject();
-  measurements_1["type"] = "Soil Temperature";
-  measurements_1["unit"] = "°C";
-  measurements_1["value"] = temperature;
+  JsonObject measurementTypes_1 = measurementTypes.createNestedObject();
+  measurementTypes_1["type"] = "soilTemperature";
+  measurementTypes_1["name"] = "Soil Temperature";
+  measurementTypes_1["unit"] = "°C";
 
-  JsonObject measurements_2 = measurements.createNestedObject();
-  measurements_2["type"] = "Sleep Duration";
-  measurements_2["unit"] = "ms";
-  measurements_2["value"] = currentSleepDuration;
+  JsonObject measurementTypes_2 = measurementTypes.createNestedObject();
+  measurementTypes_2["type"] = "sleepDuration";
+  measurementTypes_2["name"] = "Sleep Duration";
+  measurementTypes_2["unit"] = "ms";
+
+  JsonObject measurementTypes_3 = measurementTypes.createNestedObject();
+  measurementTypes_3["type"] = "activeTime";
+  measurementTypes_3["name"] = "Active Time";
+  measurementTypes_3["unit"] = "ms";
 
 #ifdef MYDEBUG
   SERIALPRINT("Json Payload; length: "); SERIALPRINTLN(measureJson(doc));
